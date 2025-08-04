@@ -8,6 +8,7 @@ Nuxt 3 + TypeScript + Tailwind CSS + Biome を使用したモダンなWebアプ�
 - **TypeScript** - 型安全なJavaScript
 - **Tailwind CSS** - ユーティリティファーストCSSフレームワーク
 - **Biome** - 高速なJavaScript/TypeScriptリンター・フォーマッター
+- **Lefthook** - Gitフック管理ツール
 - **pnpm** - 高速なパッケージマネージャー
 
 ## セットアップ
@@ -44,6 +45,18 @@ pnpm format
 pnpm format:fix
 ```
 
+### Lefthook によるGitフック
+
+コミット時に自動的にコードチェックとフォーマットが実行されます：
+
+```bash
+# 手動でpre-commitフックを実行
+pnpm lefthook run pre-commit
+
+# Lefthookの管理
+pnpm lefthook
+```
+
 ## ビルド
 
 本番用にアプリケーションをビルド：
@@ -68,6 +81,7 @@ shizuka-type/
 ├── pages/              # ページコンポーネント
 ├── public/             # 静的ファイル
 ├── biome.json          # Biome設定
+├── lefthook.yml        # Lefthook設定
 ├── nuxt.config.ts      # Nuxt設定
 ├── tailwind.config.ts  # Tailwind CSS設定
 └── tsconfig.json       # TypeScript設定

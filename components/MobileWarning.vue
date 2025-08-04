@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ExclamationTriangleIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { onMounted, ref } from 'vue'
 
 // モバイルデバイス検出
@@ -73,16 +74,12 @@ const closeWarning = () => {
           class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
           @click="closeWarning"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
+          <XMarkIcon class="w-6 h-6" />
         </button>
 
         <!-- 警告アイコン -->
         <div class="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-orange-100 rounded-full">
-          <svg class="w-8 h-8 text-orange-600" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-          </svg>
+          <ExclamationTriangleIcon class="w-8 h-8 text-orange-600" />
         </div>
 
         <!-- メッセージ -->
@@ -137,9 +134,7 @@ const closeWarning = () => {
   >
     <div class="flex items-center justify-between">
       <div class="flex items-center">
-        <svg class="w-5 h-5 text-orange-500 mr-2" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2L1 21h22L12 2zm0 3.9L19.5 19h-15L12 5.9zm-1 8.1v2h2v-2h-2zm0-6v4h2V8h-2z"/>
-        </svg>
+        <ExclamationTriangleIcon class="w-5 h-5 text-orange-500 mr-2" />
         <span class="text-sm text-orange-800">
           モバイルデバイスは非対応です
         </span>

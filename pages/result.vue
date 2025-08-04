@@ -7,12 +7,36 @@ definePageMeta({
 
 // 結果データを取得（通常はクエリパラメータやストアから）
 // ここでは一時的にサンプルデータを使用
+const generateSampleAudioData = () => {
+  const data = []
+  const baseLevel = -35
+  for (let i = 0; i < 300; i++) {
+    // 30秒間、100ms間隔
+    const time = i * 100
+    // ランダムなタイピング音をシミュレート
+    let level = baseLevel + Math.random() * 10 - 5
+
+    // タイピング音イベントをランダムに発生
+    if (Math.random() < 0.04) {
+      // 4%の確率でタイピング音
+      level = baseLevel + 15 + Math.random() * 10
+    }
+
+    data.push({
+      averageLevel: level,
+      maxLevel: level,
+      timestamp: time,
+    })
+  }
+  return data
+}
+
 const sampleResult: MeasurementResult = {
   baselineLevel: -35,
   typingEvents: 12,
   maxTypingLevel: -20,
   averageTypingLevel: -28,
-  audioData: [],
+  audioData: generateSampleAudioData(),
   judgment: 'normal',
   measurementDate: new Date(),
 }
@@ -168,6 +192,17 @@ const handleShare = () => {
               }"
             ></div>
           </div>
+        </div>
+
+        <!-- 音量推移グラフ -->
+        <div v-if="result.audioData.length > 0">
+          <AudioChart 
+            :data="result.audioData"
+            :baseline-level="result.baselineLevel"
+            :typing-threshold="result.baselineLevel + 15"
+            title="30秒間の音量推移"
+            :height="300"
+          />
         </div>
 
         <!-- 改善提案 -->

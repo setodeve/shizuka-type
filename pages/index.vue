@@ -1,4 +1,13 @@
 <script setup lang="ts">
+import {
+  ChartBarIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  ExclamationTriangleIcon,
+  MicrophoneIcon,
+  ShieldCheckIcon,
+} from '@heroicons/vue/24/outline'
+
 // ホームページのスクリプト
 definePageMeta({
   layout: 'default',
@@ -31,21 +40,15 @@ definePageMeta({
         
         <div class="flex items-center justify-center space-x-6 text-sm text-gray-500">
           <div class="flex items-center space-x-2">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
-            </svg>
+            <MicrophoneIcon class="w-4 h-4" />
             <span>マイク使用</span>
           </div>
           <div class="flex items-center space-x-2">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
-            </svg>
+            <ShieldCheckIcon class="w-4 h-4" />
             <span>ローカル処理</span>
           </div>
           <div class="flex items-center space-x-2">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zM12.5 7H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-            </svg>
+            <ClockIcon class="w-4 h-4" />
             <span>30秒測定</span>
           </div>
         </div>
@@ -56,9 +59,7 @@ definePageMeta({
     <div class="grid md:grid-cols-3 gap-8 mt-16">
       <div class="text-center space-y-4">
         <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-          <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
+          <CheckCircleIcon class="w-8 h-8 text-green-600" />
         </div>
         <h3 class="text-xl font-semibold text-gray-900">簡単測定</h3>
         <p class="text-gray-600">
@@ -69,9 +70,7 @@ definePageMeta({
 
       <div class="text-center space-y-4">
         <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-          <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M9 19c-4.286 1.35-4.286-2.55-6-3M15 21V9a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 006 9v12"/>
-          </svg>
+          <ShieldCheckIcon class="w-8 h-8 text-blue-600" />
         </div>
         <h3 class="text-xl font-semibold text-gray-900">プライバシー重視</h3>
         <p class="text-gray-600">
@@ -82,9 +81,7 @@ definePageMeta({
 
       <div class="text-center space-y-4">
         <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
-          <svg class="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-          </svg>
+          <ChartBarIcon class="w-8 h-8 text-purple-600" />
         </div>
         <h3 class="text-xl font-semibold text-gray-900">視覚的結果</h3>
         <p class="text-gray-600">
@@ -136,9 +133,7 @@ definePageMeta({
     <!-- 注意事項 -->
     <div class="bg-amber-50 border border-amber-200 rounded-lg p-6">
       <div class="flex items-start space-x-3">
-        <svg class="w-6 h-6 text-amber-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2L1 21h22L12 2zm0 3.9L19.5 19h-15L12 5.9zm-1 8.1v2h2v-2h-2zm0-6v4h2V8h-2z"/>
-        </svg>
+        <ExclamationTriangleIcon class="w-6 h-6 text-amber-600 mt-0.5 flex-shrink-0" />
         <div class="space-y-2">
           <h3 class="font-semibold text-amber-900">測定前の準備</h3>
           <ul class="text-sm text-amber-800 space-y-1">

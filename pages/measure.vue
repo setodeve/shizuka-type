@@ -16,12 +16,30 @@ const {
   resetMeasurement,
 } = useMeasurement()
 
+// 設定ガイドモーダルの表示状態
+const showSetupGuide = ref(false)
+
+// 設定ガイドを表示
+const openSetupGuide = () => {
+  showSetupGuide.value = true
+}
+
+// 設定ガイドを閉じる
+const closeSetupGuide = () => {
+  showSetupGuide.value = false
+}
+
 // 測定開始ハンドラー
 const handleStartMeasurement = async () => {
   const success = await startMeasurement()
   if (!success) {
     console.error('測定開始に失敗しました')
   }
+}
+
+// 設定ガイドから測定開始
+const handleStartFromGuide = async () => {
+  await handleStartMeasurement()
 }
 
 // 測定完了時の結果画面への遷移
@@ -56,17 +74,14 @@ onUnmounted(() => {
     </div>
 
     <!-- エラー表示 -->
-    <div v-if="audioState.error" class="bg-red-50 border border-red-200 rounded-lg p-4">
-      <div class="flex items-start space-x-3">
-        <svg class="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2L1 21h22L12 2zm0 3.9L19.5 19h-15L12 5.9zm-1 8.1v2h2v-2h-2zm0-6v4h2V8h-2z"/>
-        </svg>
-        <div>
-          <h3 class="font-semibold text-red-900">エラーが発生しました</h3>
-          <p class="text-sm text-red-800 mt-1">{{ audioState.error }}</p>
-        </div>
-      </div>
-    </div>
+    <ErrorHandler
+      v-if="audioState.error"
+      :error="audioState.error"
+      type="error"
+      @retry="handleStartMeasurement"
+      @dismiss="() => {}"
+      @help="() => {}"
+    />
 
     <!-- 測定状態表示 -->
     <div class="bg-white rounded-lg shadow-sm border p-6">
@@ -75,9 +90,11 @@ onUnmounted(() => {
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm font-medium text-gray-900">測定状況</span>
           <span class="text-sm text-gray-500">
-            {{ measurementState.phase === 'baseline' ? '環境音測定中' : 
-               measurementState.phase === 'typing' ? 'タイピング測定中' : 
-               measurementState.phase === 'completed' ? '完了' : '待機中' }}
+            {{ 
+                measurementState.phase === 'baseline' ? '環境音測定中' : 
+                measurementState.phase === 'typing' ? 'タイピング測定中' : 
+                measurementState.phase === 'completed' ? '完了' : '待機中' 
+            }}
           </span>
         </div>
         
@@ -128,17 +145,19 @@ onUnmounted(() => {
     </div>
 
     <!-- コントロールボタン -->
-    <div class="flex justify-center space-x-4">
-      <!-- 測定開始ボタン -->
-      <button
-        v-if="measurementState.phase === 'idle'"
-        type="button"
-        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        :disabled="audioState.isSupported"
-        @click="handleStartMeasurement"
-      >
-        🎤 測定開始
-      </button>
+    <div class="flex flex-col items-center space-y-4">
+      <!-- メインボタン群 -->
+      <div class="flex justify-center space-x-4">
+        <!-- 測定開始ボタン -->
+        <button
+          v-if="measurementState.phase === 'idle'"
+          type="button"
+          class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          :disabled="!audioState.isSupported"
+          @click="handleStartMeasurement"
+        >
+          🎤 測定開始
+        </button>
 
       <!-- 測定中止ボタン -->
       <button
@@ -160,13 +179,25 @@ onUnmounted(() => {
         再測定
       </button>
 
-      <!-- ホームに戻るボタン -->
-      <NuxtLink
-        to="/"
-        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-8 rounded-lg transition-colors"
-      >
-        ホームに戻る
-      </NuxtLink>
+        <!-- ホームに戻るボタン -->
+        <NuxtLink
+          to="/"
+          class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-8 rounded-lg transition-colors"
+        >
+          ホームに戻る
+        </NuxtLink>
+      </div>
+
+      <!-- 設定ガイドボタン -->
+      <div v-if="measurementState.phase === 'idle'" class="text-center">
+        <button
+          type="button"
+          class="text-blue-600 hover:text-blue-800 text-sm underline transition-colors"
+          @click="openSetupGuide"
+        >
+          📋 詳細な設定ガイドを確認する
+        </button>
+      </div>
     </div>
 
     <!-- 測定の流れ説明 -->
@@ -193,19 +224,21 @@ onUnmounted(() => {
     </div>
 
     <!-- ブラウザ非対応メッセージ -->
-    <div v-if="!audioState.isSupported" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-      <div class="flex items-start space-x-3">
-        <svg class="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2L1 21h22L12 2zm0 3.9L19.5 19h-15L12 5.9zm-1 8.1v2h2v-2h-2zm0-6v4h2V8h-2z"/>
-        </svg>
-        <div>
-          <h3 class="font-semibold text-yellow-900">ブラウザが対応していません</h3>
-          <p class="text-sm text-yellow-800 mt-1">
-            このブラウザはWeb Audio APIに対応していません。Google Chrome の最新版をご利用ください。
-          </p>
-        </div>
-      </div>
-    </div>
+    <ErrorHandler
+      v-if="!audioState.isSupported"
+      error="ブラウザがWeb Audio APIに対応していません"
+      type="warning"
+      @retry="() => {}"
+      @dismiss="() => {}"
+      @help="() => {}"
+    />
+
+    <!-- 設定ガイドモーダル -->
+    <SetupGuideModal
+      :is-open="showSetupGuide"
+      @close="closeSetupGuide"
+      @start-measurement="handleStartFromGuide"
+    />
   </div>
 </template>
 

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Bars3Icon, SpeakerWaveIcon } from '@heroicons/vue/24/outline'
+
 // ヘッダーの props や状態管理
 interface Props {
   showNavigation?: boolean
@@ -18,9 +20,7 @@ const props = withDefaults(defineProps<Props>(), {
           <NuxtLink to="/" class="flex items-center space-x-3">
             <!-- アイコン（音波のようなシンプルなSVG） -->
             <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-              </svg>
+              <SpeakerWaveIcon class="w-5 h-5 text-white" />
             </div>
             <div>
               <h1 class="text-xl font-bold text-gray-900">Shizuka Type</h1>
@@ -59,9 +59,7 @@ const props = withDefaults(defineProps<Props>(), {
             type="button" 
             class="text-gray-600 hover:text-gray-900"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
+            <Bars3Icon class="w-6 h-6" />
           </button>
         </div>
       </div>

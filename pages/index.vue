@@ -22,12 +22,12 @@ definePageMeta({
 
       <!-- メイン測定ボタン -->
       <div class="space-y-4">
-        <button 
-          type="button"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+        <NuxtLink
+          to="/measure"
+          class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
         >
           🎤 測定を開始する
-        </button>
+        </NuxtLink>
         
         <div class="flex items-center justify-center space-x-6 text-sm text-gray-500">
           <div class="flex items-center space-x-2">

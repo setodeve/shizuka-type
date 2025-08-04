@@ -73,7 +73,7 @@ pnpm preview
 
 ## プロジェクト構造
 
-```
+```md
 shizuka-type/
 ├── app/                 # Nuxt 3のアプリケーションディレクトリ
 ├── components/          # Vueコンポーネント
@@ -90,6 +90,7 @@ shizuka-type/
 ## 設定ファイル
 
 ### Biome設定 (`biome.json`)
+
 - スペースインデント（2スペース）
 - シングルクォート
 - セミコロンは必要に応じて
@@ -97,6 +98,7 @@ shizuka-type/
 - 型安全性の警告
 
 ### Tailwind CSS設定 (`tailwind.config.ts`)
+
 - カスタムプライマリカラー
 - Nuxt.jsプロジェクト構造に対応したコンテンツパス
 

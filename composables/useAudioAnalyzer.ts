@@ -264,6 +264,9 @@ export const useAudioAnalyzer = () => {
     audioState.error = null
   }
 
+  // 初期化時にブラウザサポートをチェック
+  checkBrowserSupport()
+
   return {
     audioState: readonly(audioState),
     analysisResults,

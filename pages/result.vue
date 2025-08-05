@@ -198,7 +198,7 @@ const handleShare = () => {
             :data="result.audioData"
             :baseline-level="result.baselineLevel"
             :typing-threshold="result.baselineLevel + 15"
-            title="30秒間の音量推移"
+            title="15秒間の音量推移"
             :height="300"
           />
         </div>

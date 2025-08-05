@@ -40,15 +40,15 @@ export const useMeasurement = () => {
   const measurementResult = ref<MeasurementResult | null>(null)
 
   // 測定設定
-  const BASELINE_DURATION = 5000 // 環境音測定時間（5秒）
-  const TYPING_DURATION = 30000 // タイピング測定時間（30秒）
+  const BASELINE_DURATION = 3000 // 環境音測定時間（3秒） // 環境音測定時間（5秒）
+  const TYPING_DURATION = 15000 // タイピング測定時間（15秒） // タイピング測定時間（30秒）
   const TYPING_THRESHOLD_OFFSET = 15 // 基準値からのオフセット（dB）
 
   // 判定基準
   const JUDGMENT_THRESHOLDS = {
-    quiet: { min: 0, max: 5 },
-    normal: { min: 6, max: 15 },
-    loud: { min: 16, max: Infinity },
+    quiet: { min: 0, max: 3 },
+    normal: { min: 4, max: 8 },
+    loud: { min: 9, max: Infinity },
   }
 
   // 現在の測定フェーズの説明文
@@ -222,7 +222,7 @@ export const useMeasurement = () => {
       measurementState.progress = 0
 
       // 段階的にプログレス更新
-      const updateProgress = (value: number, delay: number = 300) => {
+      const updateProgress = (value: number, delay: number = 100) => {
         return new Promise((resolve) => {
           setTimeout(() => {
             measurementState.progress = value
@@ -231,7 +231,7 @@ export const useMeasurement = () => {
         })
       }
 
-      await updateProgress(20, 100)
+      await updateProgress(20, 50)
 
       // タイピング音データ収集
       const typingData = await audioAnalyzer.collectAudioData(TYPING_DURATION)
@@ -239,12 +239,12 @@ export const useMeasurement = () => {
       // 分析停止
       audioAnalyzer.stopAnalysis()
 
-      await updateProgress(50, 200)
+      await updateProgress(50, 100)
 
       // 結果計算
       const typingEvents = detectTypingEvents(typingData, baselineLevel)
 
-      await updateProgress(70, 200)
+      await updateProgress(70, 50)
 
       const maxLevel = Math.max(...typingData.map((d) => d.averageLevel))
       const avgLevel =
@@ -252,7 +252,7 @@ export const useMeasurement = () => {
         typingData.length
       const judgment = calculateJudgment(typingEvents)
 
-      await updateProgress(90, 200)
+      await updateProgress(90, 50)
 
       // 結果保存
       measurementResult.value = {
@@ -265,7 +265,7 @@ export const useMeasurement = () => {
         measurementDate: new Date(),
       }
 
-      await updateProgress(100, 300)
+      await updateProgress(100, 100)
       measurementState.phase = 'completed'
       measurementState.message = phaseMessage.value
     })

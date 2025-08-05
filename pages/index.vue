@@ -49,7 +49,7 @@ definePageMeta({
           </div>
           <div class="flex items-center space-x-2">
             <ClockIcon class="w-4 h-4" />
-            <span>30秒測定</span>
+            <span>15秒測定</span>
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@ definePageMeta({
         <h3 class="text-xl font-semibold text-gray-900">簡単測定</h3>
         <p class="text-gray-600">
           マイクアクセスを許可して「測定開始」をクリックするだけ。<br>
-          5秒の環境音測定後、30秒間タイピングしてください。
+          3秒の環境音測定後、15秒間タイピングしてください。
         </p>
       </div>
 
@@ -109,7 +109,7 @@ definePageMeta({
             2
           </div>
           <h3 class="font-semibold text-gray-900">環境音測定</h3>
-          <p class="text-sm text-gray-600">5秒間静かにして、周囲の環境音を測定します</p>
+          <p class="text-sm text-gray-600">3秒間静かにして、周囲の環境音を測定します</p>
         </div>
         
         <div class="text-center space-y-3">
@@ -117,7 +117,7 @@ definePageMeta({
             3
           </div>
           <h3 class="font-semibold text-gray-900">タイピング測定</h3>
-          <p class="text-sm text-gray-600">30秒間、普段通りにタイピングしてください</p>
+          <p class="text-sm text-gray-600">15秒間、普段通りにタイピングしてください</p>
         </div>
         
         <div class="text-center space-y-3">

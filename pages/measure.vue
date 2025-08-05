@@ -237,11 +237,11 @@ onUnmounted(() => {
         </li>
         <li class="flex items-start space-x-2">
           <span class="font-semibold">2.</span>
-          <span>5秒間静かにして環境音を測定</span>
+          <span>3秒間静かにして環境音を測定</span>
         </li>
         <li class="flex items-start space-x-2">
           <span class="font-semibold">3.</span>
-          <span>30秒間普段通りにタイピング</span>
+          <span>15秒間普段通りにタイピング</span>
         </li>
         <li class="flex items-start space-x-2">
           <span class="font-semibold">4.</span>

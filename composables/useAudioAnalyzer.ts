@@ -196,7 +196,7 @@ export const useAudioAnalyzer = () => {
     return new Promise((resolve) => {
       const results: AudioAnalysisResult[] = []
       const startTime = Date.now()
-      const collectInterval = 100 // 100ms間隔でデータ収集
+      const collectInterval = 150 // 150ms間隔でデータ収集
 
       const collectData = () => {
         const elapsedTime = Date.now() - startTime

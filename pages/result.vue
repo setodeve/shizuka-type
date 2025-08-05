@@ -5,46 +5,35 @@ definePageMeta({
   layout: 'default',
 })
 
-// 結果データを取得（通常はクエリパラメータやストアから）
-// ここでは一時的にサンプルデータを使用
-const generateSampleAudioData = () => {
-  const data = []
-  const baseLevel = -35
-  for (let i = 0; i < 300; i++) {
-    // 30秒間、100ms間隔
-    const time = i * 100
-    // ランダムなタイピング音をシミュレート
-    let level = baseLevel + Math.random() * 10 - 5
+// 結果データを取得
+const result = ref<MeasurementResult | null>(null)
 
-    // タイピング音イベントをランダムに発生
-    if (Math.random() < 0.04) {
-      // 4%の確率でタイピング音
-      level = baseLevel + 15 + Math.random() * 10
+// sessionStorageから測定結果を取得
+onMounted(() => {
+  if (process.client) {
+    const storedResult = sessionStorage.getItem('measurementResult')
+    if (storedResult) {
+      try {
+        const parsedResult = JSON.parse(storedResult)
+        // DateオブジェクトをJSONから復元
+        parsedResult.measurementDate = new Date(parsedResult.measurementDate)
+        result.value = parsedResult
+      } catch (error) {
+        console.error('Failed to parse measurement result:', error)
+        // 測定データがない場合は測定ページにリダイレクト
+        navigateTo('/measure')
+      }
+    } else {
+      // 測定データがない場合は測定ページにリダイレクト
+      navigateTo('/measure')
     }
-
-    data.push({
-      averageLevel: level,
-      maxLevel: level,
-      timestamp: time,
-    })
   }
-  return data
-}
-
-const sampleResult: MeasurementResult = {
-  baselineLevel: -35,
-  typingEvents: 12,
-  maxTypingLevel: -20,
-  averageTypingLevel: -28,
-  audioData: generateSampleAudioData(),
-  judgment: 'normal',
-  measurementDate: new Date(),
-}
-
-const result = ref<MeasurementResult>(sampleResult)
+})
 
 // 判定結果に基づく表示データ
 const judgmentData = computed(() => {
+  if (!result.value) return null
+
   switch (result.value.judgment) {
     case 'quiet':
       return {
@@ -114,7 +103,16 @@ const handleShare = () => {
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto space-y-8">
+  <!-- ローディング表示 -->
+  <div v-if="!result" class="max-w-4xl mx-auto flex items-center justify-center min-h-[400px]">
+    <div class="text-center space-y-4">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+      <p class="text-gray-600">測定結果を読み込み中...</p>
+    </div>
+  </div>
+
+  <!-- 結果表示 -->
+  <div v-else-if="result && judgmentData" class="max-w-4xl mx-auto space-y-8">
     <!-- 結果ヘッダー -->
     <div class="text-center space-y-4">
       <h1 class="text-3xl font-bold text-gray-900">測定結果</h1>

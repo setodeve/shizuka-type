@@ -47,10 +47,18 @@ watch(
   () => measurementState.phase,
   (newPhase) => {
     if (newPhase === 'completed' && measurementResult) {
-      // 結果画面に遷移（結果データをクエリパラメータやストアで渡す）
+      // 結果データをsessionStorageに保存
+      if (process.client) {
+        sessionStorage.setItem(
+          'measurementResult',
+          JSON.stringify(measurementResult.value),
+        )
+      }
+
+      // 結果画面に遷移（即座に遷移）
       setTimeout(() => {
         navigateTo('/result')
-      }, 2000) // 2秒後に自動遷移
+      }, 500) // 0.5秒後に遷移（短縮）
     }
   },
 )
@@ -93,6 +101,7 @@ onUnmounted(() => {
             {{ 
                 measurementState.phase === 'baseline' ? '環境音測定中' : 
                 measurementState.phase === 'typing' ? 'タイピング測定中' : 
+                measurementState.phase === 'processing' ? '結果分析中' :
                 measurementState.phase === 'completed' ? '完了' : '待機中' 
             }}
           </span>
@@ -105,6 +114,7 @@ onUnmounted(() => {
             :class="{
               'bg-blue-600': measurementState.phase === 'baseline',
               'bg-green-600': measurementState.phase === 'typing',
+              'bg-purple-600': measurementState.phase === 'processing',
               'bg-gray-400': !isActive
             }"
             :style="{ width: `${measurementState.progress}%` }"
@@ -117,11 +127,28 @@ onUnmounted(() => {
         <p class="text-lg text-gray-900">{{ phaseMessage }}</p>
         
         <!-- カウントダウンタイマー -->
-        <div v-if="isActive" class="space-y-2">
+        <div v-if="isActive && measurementState.phase !== 'processing'" class="space-y-2">
           <div class="text-4xl font-bold text-blue-600">
             {{ measurementState.timeRemaining }}
           </div>
           <p class="text-sm text-gray-500">秒</p>
+        </div>
+
+        <!-- 処理中ローディング表示 -->
+        <div v-if="measurementState.phase === 'processing'" class="space-y-4">
+          <div class="flex items-center justify-center">
+            <div class="animate-ping h-10 w-10 border-2 bg-purple-600 rounded-full"></div>
+          </div>
+          <div class="text-center space-y-2">
+            <p class="text-lg font-semibold text-purple-600">分析中</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 max-w-xs mx-auto">
+              <div 
+                class="h-2 bg-purple-600 rounded-full transition-all duration-1000 ease-out"
+                :style="{ width: `${measurementState.progress}%` }"
+              ></div>
+            </div>
+            <p class="text-sm text-gray-500">{{ measurementState.progress }}% 完了</p>
+          </div>
         </div>
 
         <!-- リアルタイム音量レベル -->

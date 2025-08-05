@@ -16,6 +16,7 @@ export type MeasurementPhase =
   | 'preparing'
   | 'baseline'
   | 'typing'
+  | 'processing'
   | 'completed'
   | 'error'
 
@@ -61,6 +62,8 @@ export const useMeasurement = () => {
         return '環境音を測定しています。静かにお待ちください'
       case 'typing':
         return '普段通りにタイピングしてください'
+      case 'processing':
+        return '測定結果を分析中です。しばらくお待ちください...'
       case 'completed':
         return '測定が完了しました'
       case 'error':
@@ -72,7 +75,9 @@ export const useMeasurement = () => {
 
   // 測定が実行中かどうか
   const isActive = computed(() => {
-    return ['preparing', 'baseline', 'typing'].includes(measurementState.phase)
+    return ['preparing', 'baseline', 'typing', 'processing'].includes(
+      measurementState.phase,
+    )
   })
 
   // タイマー管理
@@ -212,19 +217,42 @@ export const useMeasurement = () => {
     measurementState.message = phaseMessage.value
 
     startTimer(TYPING_DURATION, async () => {
+      // 処理中状態に変更
+      measurementState.phase = 'processing'
+      measurementState.progress = 0
+
+      // 段階的にプログレス更新
+      const updateProgress = (value: number, delay: number = 300) => {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            measurementState.progress = value
+            resolve(undefined)
+          }, delay)
+        })
+      }
+
+      await updateProgress(20, 100)
+
       // タイピング音データ収集
       const typingData = await audioAnalyzer.collectAudioData(TYPING_DURATION)
 
       // 分析停止
       audioAnalyzer.stopAnalysis()
 
+      await updateProgress(50, 200)
+
       // 結果計算
       const typingEvents = detectTypingEvents(typingData, baselineLevel)
+
+      await updateProgress(70, 200)
+
       const maxLevel = Math.max(...typingData.map((d) => d.averageLevel))
       const avgLevel =
         typingData.reduce((sum, d) => sum + d.averageLevel, 0) /
         typingData.length
       const judgment = calculateJudgment(typingEvents)
+
+      await updateProgress(90, 200)
 
       // 結果保存
       measurementResult.value = {
@@ -237,6 +265,7 @@ export const useMeasurement = () => {
         measurementDate: new Date(),
       }
 
+      await updateProgress(100, 300)
       measurementState.phase = 'completed'
       measurementState.message = phaseMessage.value
     })

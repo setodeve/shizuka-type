@@ -12,6 +12,8 @@
     "lint:fix": "biome check --write .",
     "format": "biome format .",
     "format:fix": "biome format --write .",
+    "full:check": "npm run lint && npm run format",
+    "full:fix": "npm run lint:fix && npm run format:fix",
     "lefthook": "lefthook"
   },
   "dependencies": {

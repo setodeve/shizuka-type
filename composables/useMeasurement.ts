@@ -42,13 +42,13 @@ export const useMeasurement = () => {
   // 測定設定
   const BASELINE_DURATION = 3000 // 環境音測定時間（3秒） // 環境音測定時間（5秒）
   const TYPING_DURATION = 15000 // タイピング測定時間（15秒） // タイピング測定時間（30秒）
-  const TYPING_THRESHOLD_OFFSET = 15 // 基準値からのオフセット（dB）
+  const TYPING_THRESHOLD_OFFSET = 20 // 基準値からのオフセット（dB）
 
   // 判定基準
   const JUDGMENT_THRESHOLDS = {
-    quiet: { min: 0, max: 3 },
-    normal: { min: 4, max: 8 },
-    loud: { min: 9, max: Infinity },
+    quiet: { min: 0, max: 5 },
+    normal: { min: 6, max: 12 },
+    loud: { min: 13, max: Infinity },
   }
 
   // 現在の測定フェーズの説明文
@@ -119,7 +119,7 @@ export const useMeasurement = () => {
     const threshold = baselineLevel + TYPING_THRESHOLD_OFFSET
     let eventCount = 0
     let lastEventTime = 0
-    const minEventInterval = 200 // 最小イベント間隔（ms）
+    const minEventInterval = 250 // 最小イベント間隔（ms）
 
     for (const data of audioData) {
       if (data.averageLevel >= threshold) {

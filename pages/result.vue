@@ -197,7 +197,7 @@ const handleShare = () => {
           <AudioChart 
             :data="result.audioData"
             :baseline-level="result.baselineLevel"
-            :typing-threshold="result.baselineLevel + 15"
+            :typing-threshold="result.baselineLevel + 20"
             title="15秒間の音量推移"
             :height="300"
           />
@@ -234,20 +234,20 @@ const handleShare = () => {
         <div class="flex items-center space-x-4">
           <div class="w-4 h-4 bg-yellow-500 rounded-full"></div>
           <div class="flex-1">
-            <span class="font-medium text-gray-900">普通（6-15回）:</span>
+            <span class="font-medium text-gray-900">普通（6-12回）:</span>
             <span class="text-gray-600 ml-2">オフィス環境では問題なし</span>
           </div>
         </div>
         <div class="flex items-center space-x-4">
           <div class="w-4 h-4 bg-red-500 rounded-full"></div>
           <div class="flex-1">
-            <span class="font-medium text-gray-900">うるさい（16回以上）:</span>
+            <span class="font-medium text-gray-900">うるさい（13回以上）:</span>
             <span class="text-gray-600 ml-2">周囲への配慮が必要</span>
           </div>
         </div>
       </div>
       <p class="text-xs text-gray-500 mt-4">
-        ※ 基準値（環境音）から15dB以上の音をタイピング音として検出しています
+        ※ 基準値（環境音）から20dB以上の音をタイピング音として検出しています
       </p>
     </div>
 

@@ -83,7 +83,7 @@ definePageMeta({
         <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto">
           <ChartBarIcon class="w-8 h-8 text-purple-600" />
         </div>
-        <h3 class="text-xl font-semibold text-gray-900">視覚的結果</h3>
+        <h3 class="text-xl font-semibold text-gray-900">直感的な結果</h3>
         <p class="text-gray-600">
           3段階評価（静か・普通・うるさい）と<br>
           音量推移グラフで結果を分かりやすく表示。

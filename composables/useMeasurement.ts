@@ -194,17 +194,21 @@ export const useMeasurement = () => {
     measurementState.phase = 'baseline'
     measurementState.message = phaseMessage.value
 
-    // リアルタイム分析開始
+    // データ蓄積開始とリアルタイム分析開始
+    audioAnalyzer.startDataAccumulation()
     audioAnalyzer.startAnalysis()
 
     startTimer(BASELINE_DURATION, async () => {
-      // 環境音データ収集
-      const baselineData = await audioAnalyzer.collectAudioData(100) // 最新100msのデータ
+      // 蓄積された環境音データを取得
+      const baselineData = audioAnalyzer.getAccumulatedData()
       const baselineLevel =
         baselineData.length > 0
           ? baselineData.reduce((sum, data) => sum + data.averageLevel, 0) /
             baselineData.length
           : -40 // デフォルト値
+
+      // タイピング測定用にデータ蓄積をリセット
+      audioAnalyzer.startDataAccumulation()
 
       // タイピング測定フェーズ開始
       startTypingMeasurement(baselineLevel)
@@ -217,42 +221,27 @@ export const useMeasurement = () => {
     measurementState.message = phaseMessage.value
 
     startTimer(TYPING_DURATION, async () => {
-      // 処理中状態に変更
+      // 処理中状態に変更（短時間）
       measurementState.phase = 'processing'
-      measurementState.progress = 0
+      measurementState.progress = 50
 
-      // 段階的にプログレス更新
-      const updateProgress = (value: number, delay: number = 100) => {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            measurementState.progress = value
-            resolve(undefined)
-          }, delay)
-        })
-      }
-
-      await updateProgress(20, 50)
-
-      // タイピング音データ収集
-      const typingData = await audioAnalyzer.collectAudioData(TYPING_DURATION)
+      // 蓄積されたタイピングデータを取得（即座に利用可能）
+      const typingData = audioAnalyzer.getAccumulatedData()
 
       // 分析停止
       audioAnalyzer.stopAnalysis()
 
-      await updateProgress(50, 100)
+      measurementState.progress = 75
 
-      // 結果計算
+      // 結果計算（高速）
       const typingEvents = detectTypingEvents(typingData, baselineLevel)
-
-      await updateProgress(70, 50)
-
       const maxLevel = Math.max(...typingData.map((d) => d.averageLevel))
       const avgLevel =
         typingData.reduce((sum, d) => sum + d.averageLevel, 0) /
         typingData.length
       const judgment = calculateJudgment(typingEvents)
 
-      await updateProgress(90, 50)
+      measurementState.progress = 90
 
       // 結果保存
       measurementResult.value = {
@@ -265,9 +254,13 @@ export const useMeasurement = () => {
         measurementDate: new Date(),
       }
 
-      await updateProgress(100, 100)
-      measurementState.phase = 'completed'
-      measurementState.message = phaseMessage.value
+      measurementState.progress = 100
+
+      // 短時間待機後に完了状態へ
+      setTimeout(() => {
+        measurementState.phase = 'completed'
+        measurementState.message = phaseMessage.value
+      }, 200)
     })
   }
 

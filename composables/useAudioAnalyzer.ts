@@ -32,6 +32,7 @@ export const useAudioAnalyzer = () => {
   })
 
   const analysisResults = ref<AudioAnalysisResult[]>([])
+  const accumulatedData = ref<AudioAnalysisResult[]>([])
 
   let audioContext: AudioContext | null = null
   let analyser: AnalyserNode | null = null
@@ -164,6 +165,11 @@ export const useAudioAnalyzer = () => {
     return Number.isFinite(db) ? Math.max(db, -60) : -60
   }
 
+  // データ蓄積開始
+  const startDataAccumulation = () => {
+    accumulatedData.value = []
+  }
+
   // リアルタイム音量分析を開始
   const startAnalysis = (onUpdate?: (level: number) => void) => {
     if (!analyser || !audioState.isInitialized) {
@@ -173,6 +179,7 @@ export const useAudioAnalyzer = () => {
 
     audioState.isAnalyzing = true
     const dataArray = new Uint8Array(analyser.frequencyBinCount)
+    const analysisStartTime = Date.now()
 
     const analyze = () => {
       if (!audioState.isAnalyzing || !analyser) return
@@ -182,6 +189,14 @@ export const useAudioAnalyzer = () => {
 
       audioState.currentLevel = currentLevel
       onUpdate?.(currentLevel)
+
+      // リアルタイムでデータを蓄積
+      const timestamp = Date.now() - analysisStartTime
+      accumulatedData.value.push({
+        averageLevel: currentLevel,
+        maxLevel: currentLevel,
+        timestamp: timestamp,
+      })
 
       animationFrame = requestAnimationFrame(analyze)
     }
@@ -225,6 +240,11 @@ export const useAudioAnalyzer = () => {
     })
   }
 
+  // 蓄積されたデータを取得
+  const getAccumulatedData = (): AudioAnalysisResult[] => {
+    return [...accumulatedData.value]
+  }
+
   // 分析停止
   const stopAnalysis = () => {
     audioState.isAnalyzing = false
@@ -262,6 +282,9 @@ export const useAudioAnalyzer = () => {
     audioState.isAnalyzing = false
     audioState.currentLevel = 0
     audioState.error = null
+
+    // 蓄積データもリセット
+    accumulatedData.value = []
   }
 
   // 初期化時にブラウザサポートをチェック
@@ -270,11 +293,14 @@ export const useAudioAnalyzer = () => {
   return {
     audioState: readonly(audioState),
     analysisResults,
+    accumulatedData: readonly(accumulatedData),
     checkBrowserSupport,
     requestMicrophonePermission,
     initializeAudioContext,
     startAnalysis,
     stopAnalysis,
+    startDataAccumulation,
+    getAccumulatedData,
     collectAudioData,
     cleanup,
   }

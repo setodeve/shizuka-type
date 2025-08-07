@@ -14,6 +14,13 @@ const {
   startMeasurement,
   cancelMeasurement,
   resetMeasurement,
+  currentSampleText,
+  typedText,
+  isTypingActive,
+  sampleCharacters,
+  currentCharacterIndex,
+  currentRomajiPosition,
+  hasInputError,
 } = useMeasurement()
 
 // 設定ガイドモーダルの表示状態
@@ -171,6 +178,16 @@ onUnmounted(() => {
       </div>
     </div>
 
+    <!-- タイピング用サンプルテキスト表示 -->
+    <TypingTextDisplay
+      :sample-characters="sampleCharacters as any"
+      :typed-text="typedText"
+      :current-character-index="currentCharacterIndex"
+      :current-romaji-position="currentRomajiPosition"
+      :has-input-error="hasInputError"
+      :is-visible="measurementState.phase === 'typing'"
+    />
+
     <!-- コントロールボタン -->
     <div class="flex flex-col items-center space-y-4">
       <!-- メインボタン群 -->
@@ -241,7 +258,7 @@ onUnmounted(() => {
         </li>
         <li class="flex items-start space-x-2">
           <span class="font-semibold">3.</span>
-          <span>15秒間普段通りにタイピング</span>
+          <span>15秒間サンプル文章を参考にタイピング</span>
         </li>
         <li class="flex items-start space-x-2">
           <span class="font-semibold">4.</span>

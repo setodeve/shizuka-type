@@ -106,7 +106,7 @@ const handleShare = () => {
   <!-- ローディング表示 -->
   <div v-if="!result" class="max-w-4xl mx-auto flex items-center justify-center min-h-[400px]">
     <div class="text-center space-y-4">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+      <div class="animate-ping h-10 w-10 border-2 bg-purple-600 rounded-full mx-auto"></div>
       <p class="text-gray-600">測定結果を読み込み中...</p>
     </div>
   </div>

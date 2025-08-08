@@ -26,32 +26,6 @@ const getCharacterStatus = (
   }
 }
 
-// ローマ字の入力状況を取得
-const getCurrentRomajiInput = (): string => {
-  if (props.currentCharacterIndex >= props.sampleCharacters.length) {
-    return ''
-  }
-
-  const currentChar = props.sampleCharacters[props.currentCharacterIndex]
-  if (!currentChar) return ''
-  const expectedRomaji = currentChar.primaryRomaji.toLowerCase()
-
-  // 現在の文字の開始位置を計算
-  let startPos = 0
-  for (let i = 0; i < props.currentCharacterIndex; i++) {
-    const char = props.sampleCharacters[i]
-    if (char) {
-      startPos += char.primaryRomaji.length
-    }
-  }
-
-  // 現在の文字の入力状況
-  const currentInput = props.typedText.slice(startPos).toLowerCase()
-  const matchLength = Math.min(currentInput.length, expectedRomaji.length)
-
-  return currentInput.slice(0, matchLength)
-}
-
 // 進捗率の計算
 const progressPercent = computed(() => {
   if (props.sampleCharacters.length === 0) return 0

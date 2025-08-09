@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useEnvironmentDetection } from '~/composables/useEnvironmentDetection'
 import { useMeasurement } from '~/composables/useMeasurement'
 
 definePageMeta({
@@ -23,6 +24,17 @@ const {
   hasInputError,
 } = useMeasurement()
 
+// 環境検出コンポーザブル
+const {
+  environmentState,
+  getRecommendationText,
+  getImprovementAdvice,
+  isAvailable: isEnvironmentDetectionAvailable,
+  isSuitableForMeasurement,
+  startEnvironmentDetection,
+  resetDetection,
+} = useEnvironmentDetection()
+
 // 設定ガイドモーダルの表示状態
 const showSetupGuide = ref(false)
 
@@ -34,6 +46,19 @@ const openSetupGuide = () => {
 // 設定ガイドを閉じる
 const closeSetupGuide = () => {
   showSetupGuide.value = false
+}
+
+// 環境検出開始
+const handleStartEnvironmentDetection = async () => {
+  const success = await startEnvironmentDetection()
+  if (!success) {
+    console.error('環境検出に失敗しました')
+  }
+}
+
+// 環境検出リセット
+const handleResetEnvironmentDetection = () => {
+  resetDetection()
 }
 
 // 測定開始ハンドラー
@@ -97,6 +122,135 @@ onUnmounted(() => {
       @dismiss="() => {}"
       @help="() => {}"
     />
+
+    <!-- 環境検出エラー表示 -->
+    <ErrorHandler
+      v-if="environmentState.error"
+      :error="environmentState.error"
+      type="error"
+      @retry="handleStartEnvironmentDetection"
+      @dismiss="handleResetEnvironmentDetection"
+      @help="() => {}"
+    />
+
+    <!-- 環境検出結果表示 -->
+    <div 
+      v-if="isEnvironmentDetectionAvailable && measurementState.phase === 'idle'"
+      class="bg-white rounded-lg shadow-sm border p-6"
+    >
+      <h3 class="text-lg font-semibold text-gray-900 mb-4">🔈 環境音チェック</h3>
+      
+      <!-- 環境検出中 -->
+      <div v-if="environmentState.isDetecting" class="space-y-4">
+        <div class="text-center">
+          <div class="text-blue-600 mb-2">
+            <svg class="w-8 h-8 animate-spin mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </div>
+          <p class="text-gray-700">環境音を分析しています...</p>
+          <p class="text-sm text-gray-500 mt-1">5秒間静かにお待ちください</p>
+        </div>
+        
+        <!-- プログレスバー -->
+        <div class="w-full bg-gray-200 rounded-full h-3">
+          <div 
+            class="h-3 bg-blue-600 rounded-full transition-all duration-300"
+            :style="{ width: `${environmentState.progress}%` }"
+          ></div>
+        </div>
+        <div class="text-center text-sm text-gray-500">
+          {{ environmentState.progress }}% 完了
+        </div>
+      </div>
+
+      <!-- 環境検出結果 -->
+      <div v-else-if="environmentState.hasDetected && environmentState.status" class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <span class="text-lg">{{ getRecommendationText }}</span>
+            <div class="text-sm text-gray-600">
+              平均音量: {{ Math.round(environmentState.status.averageLevel) }} dB
+            </div>
+          </div>
+          <button
+            type="button"
+            class="text-blue-600 hover:text-blue-800 text-sm underline transition-colors"
+            @click="handleResetEnvironmentDetection"
+          >
+            再検出
+          </button>
+        </div>
+
+        <div 
+          class="p-4 rounded-lg border"
+          :class="{
+            'bg-green-50 border-green-200': environmentState.status.recommendation === 'excellent',
+            'bg-blue-50 border-blue-200': environmentState.status.recommendation === 'good',
+            'bg-yellow-50 border-yellow-200': environmentState.status.recommendation === 'caution',
+            'bg-red-50 border-red-200': environmentState.status.recommendation === 'poor'
+          }"
+        >
+          <p 
+            class="font-medium mb-2"
+            :class="{
+              'text-green-800': environmentState.status.recommendation === 'excellent',
+              'text-blue-800': environmentState.status.recommendation === 'good',
+              'text-yellow-800': environmentState.status.recommendation === 'caution',
+              'text-red-800': environmentState.status.recommendation === 'poor'
+            }"
+          >
+            {{ environmentState.status.message }}
+          </p>
+          
+          <!-- 改善アドバイス -->
+          <div v-if="getImprovementAdvice.length > 0" class="mt-3">
+            <p 
+              class="text-sm font-medium mb-2"
+              :class="{
+                'text-green-700': environmentState.status.recommendation === 'excellent',
+                'text-blue-700': environmentState.status.recommendation === 'good',
+                'text-yellow-700': environmentState.status.recommendation === 'caution',
+                'text-red-700': environmentState.status.recommendation === 'poor'
+              }"
+            >
+              {{ environmentState.status.recommendation === 'excellent' || environmentState.status.recommendation === 'good' ? '✅ 推奨事項:' : '💡 改善アドバイス:' }}
+            </p>
+            <ul 
+              class="text-sm space-y-1"
+              :class="{
+                'text-green-600': environmentState.status.recommendation === 'excellent',
+                'text-blue-600': environmentState.status.recommendation === 'good',
+                'text-yellow-600': environmentState.status.recommendation === 'caution',
+                'text-red-600': environmentState.status.recommendation === 'poor'
+              }"
+            >
+              <li v-for="advice in getImprovementAdvice" :key="advice" class="flex items-start space-x-1">
+                <span>•</span>
+                <span>{{ advice }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 環境検出開始ボタン -->
+      <div v-else class="text-center space-y-3">
+        <p class="text-gray-600">
+          正確な測定のため、まず環境の静音性をチェックします
+        </p>
+        <button
+          type="button"
+          class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-lg transition-colors"
+          @click="handleStartEnvironmentDetection"
+        >
+          チェック開始
+        </button>
+        <p class="text-xs text-gray-500">
+          5秒間の環境音測定を行います
+        </p>
+      </div>
+    </div>
 
     <!-- 測定状態表示 -->
     <div class="bg-white rounded-lg shadow-sm border p-6">
@@ -196,11 +350,20 @@ onUnmounted(() => {
         <button
           v-if="measurementState.phase === 'idle'"
           type="button"
-          class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="font-bold py-3 px-8 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          :class="{
+            'bg-blue-600 hover:bg-blue-700 text-white': !environmentState.hasDetected || isSuitableForMeasurement,
+            'bg-yellow-600 hover:bg-yellow-700 text-white': environmentState.hasDetected && !isSuitableForMeasurement && environmentState.status?.recommendation === 'caution',
+            'bg-red-600 hover:bg-red-700 text-white': environmentState.hasDetected && !isSuitableForMeasurement && environmentState.status?.recommendation === 'poor'
+          }"
           :disabled="!audioState.isSupported"
           @click="handleStartMeasurement"
+          :title="environmentState.hasDetected && !isSuitableForMeasurement ? '環境が騒がしいですが、測定を開始できます' : ''"
         >
-          🎤 測定開始
+          <span v-if="!environmentState.hasDetected">🎤 測定開始</span>
+          <span v-else-if="isSuitableForMeasurement">✅ 測定開始 (環境適正)</span>
+          <span v-else-if="environmentState.status?.recommendation === 'caution'">⚠️ 注意して測定開始</span>
+          <span v-else>⚠️ 慎重に測定開始</span>
         </button>
 
       <!-- 測定中止ボタン -->
@@ -280,8 +443,13 @@ onUnmounted(() => {
     <!-- 設定ガイドモーダル -->
     <SetupGuideModal
       :is-open="showSetupGuide"
+      :environment-status="environmentState.status"
+      :has-environment-detection="isEnvironmentDetectionAvailable"
+      :is-detecting="environmentState.isDetecting"
+      :detection-progress="environmentState.progress"
       @close="closeSetupGuide"
       @start-measurement="handleStartFromGuide"
+      @start-environment-detection="handleStartEnvironmentDetection"
     />
   </div>
 </template>

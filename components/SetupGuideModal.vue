@@ -1,30 +1,70 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 interface Props {
   isOpen: boolean
+  environmentStatus?: {
+    isQuiet: boolean
+    averageLevel: number
+    recommendation: 'excellent' | 'good' | 'caution' | 'poor'
+    message: string
+  } | null
+  hasEnvironmentDetection?: boolean
+  isDetecting?: boolean
+  detectionProgress?: number
 }
 
 interface Emits {
   (e: 'close'): void
   (e: 'start-measurement'): void
+  (e: 'start-environment-detection'): void
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 // チェックリスト項目の状態管理
 const checklistItems = ref([
-  { id: 'environment', text: '周囲が静か（40dB未満推奨）', checked: false },
+  {
+    id: 'environment',
+    text: '周囲が静か（40dB未満推奨）',
+    checked: false,
+    automated: true,
+  },
   {
     id: 'distance',
     text: 'マイクとキーボードの距離が50cm程度',
     checked: false,
+    automated: false,
   },
-  { id: 'volume', text: 'マイク音量が50%程度に設定', checked: false },
-  { id: 'quiet', text: '測定中は会話しない', checked: false },
-  { id: 'typing', text: '普段通りのタイピングを心がける', checked: false },
+  {
+    id: 'volume',
+    text: 'マイク音量が50%程度に設定',
+    checked: false,
+    automated: false,
+  },
+  { id: 'quiet', text: '測定中は会話しない', checked: false, automated: false },
+  {
+    id: 'typing',
+    text: '普段通りのタイピングを心がける',
+    checked: false,
+    automated: false,
+  },
 ])
+
+// 環境検出結果に基づく自動チェック
+watch(
+  () => props.environmentStatus,
+  (status) => {
+    const envItem = checklistItems.value.find(
+      (item) => item.id === 'environment',
+    )
+    if (envItem && status) {
+      envItem.checked = status.isQuiet
+    }
+  },
+  { immediate: true },
+)
 
 // 全項目がチェックされているかどうか
 const allChecked = computed(() => {
@@ -120,6 +160,129 @@ const handleStartMeasurement = () => {
         </div>
 
         <div class="p-6 space-y-8">
+          <!-- 環境検出セクション -->
+          <section v-if="props.hasEnvironmentDetection">
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">🌍 0. 自動環境検出</h3>
+            
+            <!-- 環境検出結果がない場合または検出中 -->
+            <div v-if="!props.environmentStatus || props.isDetecting" class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <!-- 検出中 -->
+              <div v-if="props.isDetecting" class="space-y-3">
+                <div class="flex items-center space-x-3">
+                  <svg class="w-6 h-6 text-blue-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span class="font-medium text-blue-800">環境検出中...</span>
+                </div>
+                <p class="text-sm text-blue-700">
+                  5秒間静かにお待ちください
+                </p>
+                <div class="w-full bg-blue-200 rounded-full h-3">
+                  <div 
+                    class="h-3 bg-blue-600 rounded-full transition-all duration-300"
+                    :style="{ width: `${props.detectionProgress || 0}%` }"
+                  ></div>
+                </div>
+                <div class="text-sm text-blue-600 text-center">
+                  {{ props.detectionProgress || 0 }}% 完了
+                </div>
+              </div>
+              
+              <!-- 未検出 -->
+              <div v-else>
+                <div class="flex items-center space-x-3 mb-3">
+                  <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L1 21h22L12 2zm0 3.9L19.5 19h-15L12 5.9zm-1 8.1v2h2v-2h-2zm0-6v4h2V8h-2z"/>
+                  </svg>
+                  <span class="font-medium text-blue-800">環境検出を実行してください</span>
+                </div>
+                <p class="text-sm text-blue-700 mb-4">
+                  正確な測定のため、まず環境の静音性を自動でチェックします。
+                </p>
+                <button
+                  type="button"
+                  class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                  @click="emit('start-environment-detection')"
+                >
+                  🌍 環境検出開始
+                </button>
+              </div>
+            </div>
+
+            <!-- 環境検出結果がある場合 -->
+            <div v-else class="space-y-3">
+              <div 
+                class="p-4 rounded-lg border"
+                :class="{
+                  'bg-green-50 border-green-200': props.environmentStatus.recommendation === 'excellent',
+                  'bg-blue-50 border-blue-200': props.environmentStatus.recommendation === 'good',
+                  'bg-yellow-50 border-yellow-200': props.environmentStatus.recommendation === 'caution',
+                  'bg-red-50 border-red-200': props.environmentStatus.recommendation === 'poor'
+                }"
+              >
+                <div class="flex items-center justify-between mb-2">
+                  <span 
+                    class="font-medium"
+                    :class="{
+                      'text-green-800': props.environmentStatus.recommendation === 'excellent',
+                      'text-blue-800': props.environmentStatus.recommendation === 'good',
+                      'text-yellow-800': props.environmentStatus.recommendation === 'caution',
+                      'text-red-800': props.environmentStatus.recommendation === 'poor'
+                    }"
+                  >
+                    {{ 
+                      props.environmentStatus.recommendation === 'excellent' ? '🟢 最適な環境' :
+                      props.environmentStatus.recommendation === 'good' ? '🟡 良好な環境' :
+                      props.environmentStatus.recommendation === 'caution' ? '🟠 注意が必要' : '🔴 測定困難'
+                    }}
+                  </span>
+                  <span class="text-sm text-gray-600">
+                    {{ Math.round(props.environmentStatus.averageLevel) }} dB
+                  </span>
+                </div>
+                
+                <p 
+                  class="text-sm"
+                  :class="{
+                    'text-green-700': props.environmentStatus.recommendation === 'excellent',
+                    'text-blue-700': props.environmentStatus.recommendation === 'good',
+                    'text-yellow-700': props.environmentStatus.recommendation === 'caution',
+                    'text-red-700': props.environmentStatus.recommendation === 'poor'
+                  }"
+                >
+                  {{ props.environmentStatus.message }}
+                </p>
+
+                <!-- 改善アドバイス（騒がしい環境の場合） -->
+                <div v-if="!props.environmentStatus.isQuiet" class="mt-3 p-3 bg-white bg-opacity-50 rounded border border-opacity-30 border-gray-400">
+                  <p class="text-sm font-medium text-gray-700 mb-2">💡 改善方法:</p>
+                  <ul class="text-xs text-gray-600 space-y-1">
+                    <li v-if="props.environmentStatus.recommendation === 'caution'">
+                      • 窓を閉めて外音を遮断してください
+                    </li>
+                    <li v-if="props.environmentStatus.recommendation === 'caution'">
+                      • エアコンやファンの音量を下げてください
+                    </li>
+                    <li v-if="props.environmentStatus.recommendation === 'poor'">
+                      • より静かな部屋に移動してください
+                    </li>
+                    <li v-if="props.environmentStatus.recommendation === 'poor'">
+                      • 周囲の機器の電源を切ってください
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="text-blue-600 hover:text-blue-800 text-sm underline transition-colors"
+                @click="emit('start-environment-detection')"
+              >
+                🔄 再検出する
+              </button>
+            </div>
+          </section>
+
           <!-- マイク距離設定 -->
           <section>
             <h3 class="text-xl font-semibold text-gray-900 mb-4">📏 1. マイク距離の設定</h3>
@@ -215,6 +378,9 @@ const handleStartMeasurement = () => {
                   }"
                 >
                   {{ item.text }}
+                  <span v-if="item.automated && item.id === 'environment' && props.environmentStatus" class="ml-2 text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">
+                    自動検出済み
+                  </span>
                 </span>
               </div>
             </div>

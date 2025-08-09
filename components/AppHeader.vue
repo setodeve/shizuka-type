@@ -18,11 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
         <!-- アプリタイトル -->
         <div class="flex items-center">
           <NuxtLink to="/" class="flex items-center space-x-3">
-            <!-- アイコン（音波のようなシンプルなSVG） -->
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <SpeakerWaveIcon class="w-5 h-5 text-white" />
-            </div>
-            <div>
+            <div class="flex flex-col">
               <h1 class="text-xl font-bold text-gray-900">Shizuka Type</h1>
               <p class="text-xs text-gray-500">タイピング音量チェッカー</p>
             </div>
@@ -33,20 +29,20 @@ const props = withDefaults(defineProps<Props>(), {
         <nav v-if="props.showNavigation" class="hidden sm:flex items-center space-x-6">
           <NuxtLink 
             to="/" 
-            class="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+            class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-semibold"
           >
             測定開始
           </NuxtLink>
           <button 
             type="button"
-            class="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+            class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-semibold"
             @click="$emit('show-privacy')"
           >
             プライバシー
           </button>
           <button 
             type="button"
-            class="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+            class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-semibold"
             @click="$emit('show-guide')"
           >
             使い方

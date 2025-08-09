@@ -19,13 +19,16 @@ definePageMeta({
     <!-- ヒーローセクション -->
     <div class="text-center space-y-6">
       <div class="space-y-4">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900">
           あなたのタイピングは
           <span class="text-blue-600">うるさい？</span>
         </h1>
-        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-          Web Audio API を使用して、タイピング音量を客観的に測定します。<br>
-          周囲への配慮をサポートする音量チェッカーです。
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          タイピング音量を客観的に測定します。<br>
+          周囲への配慮をサポートする音量チェッカーです。<br>
+          <span class="text-xs text-gray-500">
+            ※ 測定結果はブラウザ内で処理され、サーバーに送信されることはありません。
+          </span>
         </p>
       </div>
 
@@ -33,12 +36,12 @@ definePageMeta({
       <div class="space-y-4">
         <NuxtLink
           to="/measure"
-          class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-lg transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+          class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg text-base transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1"
         >
-          🎤 測定を開始する
+          🎤 測定開始
         </NuxtLink>
         
-        <div class="flex items-center justify-center space-x-6 text-sm text-gray-500">
+        <!-- <div class="flex items-center justify-center space-x-6 text-xs text-gray-500">
           <div class="flex items-center space-x-2">
             <MicrophoneIcon class="w-4 h-4" />
             <span>マイク使用</span>
@@ -51,12 +54,12 @@ definePageMeta({
             <ClockIcon class="w-4 h-4" />
             <span>15秒測定</span>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
 
     <!-- 機能説明セクション -->
-    <div class="grid md:grid-cols-3 gap-8 mt-16">
+    <!-- <div class="grid md:grid-cols-3 gap-8 mt-16">
       <div class="text-center space-y-4">
         <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
           <CheckCircleIcon class="w-8 h-8 text-green-600" />
@@ -89,11 +92,11 @@ definePageMeta({
           音量推移グラフで結果を分かりやすく表示。
         </p>
       </div>
-    </div>
+    </div> -->
 
     <!-- 測定の流れセクション -->
     <div class="bg-white rounded-lg shadow-sm p-8 mt-16">
-      <h2 class="text-2xl font-bold text-gray-900 text-center mb-8">測定の流れ</h2>
+      <h2 class="text-xl font-bold text-gray-900 text-center mb-8">測定の流れ</h2>
       
       <div class="grid md:grid-cols-4 gap-6">
         <div class="text-center space-y-3">

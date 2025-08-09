@@ -361,7 +361,7 @@ onUnmounted(() => {
           :title="environmentState.hasDetected && !isSuitableForMeasurement ? '環境が騒がしいですが、測定を開始できます' : ''"
         >
           <span v-if="!environmentState.hasDetected">🎤 測定開始</span>
-          <span v-else-if="isSuitableForMeasurement">✅ 測定開始 (環境適正)</span>
+          <span v-else-if="isSuitableForMeasurement">✅ 測定開始</span>
           <span v-else-if="environmentState.status?.recommendation === 'caution'">⚠️ 注意して測定開始</span>
           <span v-else>⚠️ 慎重に測定開始</span>
         </button>

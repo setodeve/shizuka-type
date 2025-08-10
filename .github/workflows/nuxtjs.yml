@@ -87,6 +87,7 @@ jobs:
       - name: Static HTML export with Nuxt
         env:
           NODE_ENV: production
+          NUXT_APP_BASE_URL: /shizuka-type/
         run: ${{ steps.detect-package-manager.outputs.manager }} run generate
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

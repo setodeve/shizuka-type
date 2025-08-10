@@ -34,5 +34,11 @@ export default defineNuxtConfig({
   experimental: {
     payloadExtraction: false,
   },
+  // CSS分割を無効にしてTailwind CSSが確実に読み込まれるようにする
+  vite: {
+    build: {
+      cssCodeSplit: false,
+    },
+  },
   ssr: true,
 })

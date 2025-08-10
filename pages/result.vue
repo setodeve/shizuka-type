@@ -261,13 +261,14 @@ const handleShare = () => {
         🔄 再測定する
       </button>
       
-      <button
+      <!-- TODO: シェア機能を実装したら有効化 -->
+      <!-- <button
         type="button"
         class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition-colors"
         @click="handleShare"
       >
         📤 結果をシェア
-      </button>
+      </button> -->
       
       <NuxtLink
         to="/"

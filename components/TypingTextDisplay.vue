@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { CharacterWithRomaji } from '~/utils/romajiConverter'
 
 // プロパティの型定義

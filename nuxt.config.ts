@@ -6,6 +6,8 @@ export default defineNuxtConfig({
   typescript: {
     strict: true,
   },
+  // CSSファイルの設定
+  css: ['~/assets/css/main.css'],
   // GitHub Pages用の設定
   app: {
     baseURL: process.env.NODE_ENV === 'production' ? '/shizuka-type/' : '/',

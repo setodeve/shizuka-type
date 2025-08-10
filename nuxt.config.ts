@@ -18,4 +18,9 @@ export default defineNuxtConfig({
       routes: ['/'],
     },
   },
+  // 静的サイト生成時のCSS最適化設定
+  experimental: {
+    payloadExtraction: false,
+  },
+  ssr: true,
 })

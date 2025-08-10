@@ -8,10 +8,6 @@ export default defineNuxtConfig({
   },
   // CSSファイルの設定
   css: ['~/assets/css/main.css'],
-  // GitHub Pages用の設定
-  app: {
-    baseURL: process.env.NODE_ENV === 'production' ? '/shizuka-type/' : '/',
-  },
   // 静的サイト生成用の設定
   nitro: {
     prerender: {

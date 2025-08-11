@@ -45,7 +45,9 @@ export default defineNuxtConfig({
   vite: {
     build: {
       cssCodeSplit: false,
+      assetsInlineLimit: 0, // Ensure CSS is always in separate files
     },
   },
-  ssr: true,
+  // 静的サイト生成用設定
+  ssr: false, // GitHub Pages用にSSRを無効化
 })

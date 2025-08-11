@@ -78,12 +78,16 @@ jobs:
             .nuxt
             node_modules
             .pnpm-store
-          key: ${{ runner.os }}-nuxt-build-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/tailwind.config.ts') }}
+          key: ${{ runner.os }}-nuxt-build-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/tailwind.config.ts', '**/nuxt.config.ts') }}
           restore-keys: |
             ${{ runner.os }}-nuxt-build-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-nuxt-build-
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
+      - name: Clear build cache
+        run: |
+          rm -rf .nuxt
+          rm -rf .output
       - name: Static HTML export with Nuxt
         env:
           NODE_ENV: production

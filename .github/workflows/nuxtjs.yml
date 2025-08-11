@@ -97,11 +97,12 @@ jobs:
           echo "Checking for CSS files..."
           find .output/public -name "*.css" -type f
           echo "Verifying CSS content..."
-          if [ -f .output/public/_nuxt/*.css ]; then
-            echo "CSS files found:"
+          CSS_COUNT=$(find .output/public/_nuxt -name "*.css" -type f | wc -l)
+          if [ "$CSS_COUNT" -gt 0 ]; then
+            echo "CSS files found: $CSS_COUNT"
             ls -la .output/public/_nuxt/*.css
-            echo "First CSS file size:"
-            wc -c .output/public/_nuxt/*.css | head -1
+            echo "Total CSS size:"
+            du -sh .output/public/_nuxt/*.css
           else
             echo "WARNING: No CSS files found!"
             exit 1

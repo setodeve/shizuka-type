@@ -49,6 +49,10 @@ export const useAudioAnalyzer = () => {
   // ブラウザサポートチェック
   const checkBrowserSupport = (): boolean => {
     try {
+      // Client-side only check
+      if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+        return false
+      }
       const hasGetUserMedia = !!navigator.mediaDevices?.getUserMedia
       const hasAudioContext = !!(
         window.AudioContext ||

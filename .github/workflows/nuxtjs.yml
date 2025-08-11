@@ -74,14 +74,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            .output
-            .nuxt
             node_modules
             .pnpm-store
-          key: ${{ runner.os }}-nuxt-build-v2-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/tailwind.config.ts', '**/nuxt.config.ts') }}
+          key: ${{ runner.os }}-nuxt-deps-v3-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-nuxt-build-${{ hashFiles('**/pnpm-lock.yaml') }}-
-            ${{ runner.os }}-nuxt-build-
+            ${{ runner.os }}-nuxt-deps-v3-
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Clear build cache
@@ -93,6 +90,22 @@ jobs:
           NODE_ENV: production
           NUXT_APP_BASE_URL: /shizuka-type/
         run: ${{ steps.detect-package-manager.outputs.manager }} run generate
+      - name: Verify build output
+        run: |
+          echo "Verifying build output structure..."
+          ls -la .output/public/
+          echo "Checking for CSS files..."
+          find .output/public -name "*.css" -type f
+          echo "Verifying CSS content..."
+          if [ -f .output/public/_nuxt/*.css ]; then
+            echo "CSS files found:"
+            ls -la .output/public/_nuxt/*.css
+            echo "First CSS file size:"
+            wc -c .output/public/_nuxt/*.css | head -1
+          else
+            echo "WARNING: No CSS files found!"
+            exit 1
+          fi
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

@@ -28,7 +28,14 @@ export default defineNuxtConfig({
     baseURL,
     prerender: {
       routes: ['/'],
+      crawlLinks: true,
     },
+  },
+  // ルートレベルでのプリレンダリング設定
+  routeRules: {
+    '/': { prerender: true },
+    '/measure': { prerender: true },
+    '/result': { prerender: true },
   },
   // 静的サイト生成時のCSS最適化設定
   experimental: {

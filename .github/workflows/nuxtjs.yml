@@ -78,7 +78,7 @@ jobs:
             .nuxt
             node_modules
             .pnpm-store
-          key: ${{ runner.os }}-nuxt-build-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/tailwind.config.ts', '**/nuxt.config.ts') }}
+          key: ${{ runner.os }}-nuxt-build-v2-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/tailwind.config.ts', '**/nuxt.config.ts') }}
           restore-keys: |
             ${{ runner.os }}-nuxt-build-${{ hashFiles('**/pnpm-lock.yaml') }}-
             ${{ runner.os }}-nuxt-build-
